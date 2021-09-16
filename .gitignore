@@ -1,6 +1,12 @@
+*.apk
+arknights-hg-1540
+.vscode
+
+
+###########以下为自动生成###############
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
+# *.py[cod]
 *$py.class
 
 # C extensions
