@@ -10,7 +10,7 @@ wiki_url='http://prts.wiki/w/'
 operator_url=''
 
 def findSubStr(substr, str, i):#查找子字符串第i次出现的位置
-    count = 0
+    count = 0 
     while i > 0:
         index = str.find(substr)
         if index == -1:
