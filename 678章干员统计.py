@@ -12,14 +12,14 @@ chapter8.iloc[:, 6:]
 # 拼接干员列
 
 
-def tongji(chapter):
-    tongji = pd.DataFrame([])  # 长度=(行数+1)*8
+def statistics(chapter):
+    statistics = pd.DataFrame([])  # 长度=(行数+1)*8
     for x in range(6, 14):
-        tongji = pd.concat([tongji, chapter.iloc[:, x]])
-    return tongji
+        statistics = pd.concat([statistics, chapter.iloc[:, x]])
+    return statistics
 
 
 # 统计
-result = pd.concat([tongji(chapter6), tongji(chapter7), tongji(chapter8)])
+result = pd.concat([statistics(chapter6), statistics(chapter7), statistics(chapter8)])
 print(result.value_counts())
 result.value_counts().to_excel(r"E:\Desktop\result.xlsx")

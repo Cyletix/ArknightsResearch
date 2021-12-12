@@ -16,6 +16,7 @@ while(True):
     #固定的输入必须有固定的输出
     #不同尺度噪声的叠加
     plt.imshow(arr, interpolation='nearest', cmap='bone', origin='lower')
+    input('按任意键继续')
     plt.close()
 #根据像素绘制图片 origin表示渐变程度
 # plt.colorbar()

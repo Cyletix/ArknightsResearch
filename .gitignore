@@ -1,7 +1,7 @@
 *.apk
 arknights-hg-1540
 .vscode
-
+.gitignore
 
 ###########以下为自动生成###############
 # Byte-compiled / optimized / DLL files

@@ -1,3 +1,11 @@
+'''
+Description: 文件描述
+
+Author: Cyletix
+Date: 2021-07-17 22:08:59
+LastEditTime: 2021-10-12 13:54:07
+FilePath: \Code\GitHub\ArknightsResearch\get_BV_time.py
+'''
 import pandas as pd
 
 domain = 'https://www.bilibili.com/video/'
