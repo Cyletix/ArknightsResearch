@@ -3,6 +3,11 @@ arknights-hg-1540
 .vscode
 .gitignore
 
+
+非线性回归.ipynb
+杂项\网页解析.html
+
+
 ###########以下为自动生成###############
 # Byte-compiled / optimized / DLL files
 __pycache__/
