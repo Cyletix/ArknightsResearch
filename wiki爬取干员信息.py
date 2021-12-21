@@ -7,18 +7,15 @@ LastEditTime: 2021-11-02 11:07:16
 FilePath: \Code\GitHub\ArknightsResearch\wiki爬取干员信息.py
 '''
 import pandas as pd
-import xlwings as xw
-from lxml import etree
+# import xlwings as xw
+# from lxml import etree
 # excel_path=r"C:\Users\ASUS\OneDrive\文档\明日方舟.xlsx"
 # name_list=pd.read_excel(excel_path,sheet_name='干员信息')['干员']
 
 name_list=[
-    '耀骑士临光',
-    '焰尾',
-    '蚀清',
-    '野鬃',
-    '蜜莓',
-    '布丁',
+    '灵知',
+    '极光',
+    '耶拉'
     # '正义骑士号',
 ]
 
@@ -153,7 +150,7 @@ output_path='D:\Code\GitHub\ArknightsResearch\wiki爬取干员信息.py'
 # wb.save()
 # wb.close()
 
-df.to_excel('wiki爬取干员信息4.xlsx',index=False)
+df.to_excel('杂项/wiki爬取干员信息5.xlsx',index=False)
 
 # 解决pandas .to_excel不覆盖已有sheet的问题
 # https://www.jb51.net/article/152453.htm
@@ -180,4 +177,3 @@ df = pd.read_sql_query(
 # 1.选择干员名称
 # 2.在数据库中判断如果不存在则创建新干员,并重新排序
 # 3.从wiki查询数据,如果存在则直接插入数据库,失败则不管
-4.
