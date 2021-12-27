@@ -1,5 +1,5 @@
 '''
-Description: 文件描述
+Description: 正在向get_op_info.py迁移,重写逻辑ing...
 
 Author: Cyletix
 Date: 2021-09-12 12:43:04
@@ -80,7 +80,7 @@ for i in range(len(name_list)):
             attribute_rely=int(attribute_rely)
         attribute+=attribute_rely
         attribute_list.append(attribute)
-    df=df.append(dict(zip(Attribute_list,attribute_list)), ignore_index=True)    
+    df=df.append(dict(zip(Attribute_list,attribute_list)), ignore_index=True)
 
     # 技能
     skill1='<p><b>技能1（精英0开放）</b>'

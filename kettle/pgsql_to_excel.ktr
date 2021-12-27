@@ -523,7 +523,7 @@
     <appendLines>N</appendLines>
     <add_to_result_filenames>N</add_to_result_filenames>
     <file>
-      <name>D:\OneDrive\Code\GitHub\ArknightsResearch\杂项\干员信息.xlsx</name>
+      <name>D:\OneDrive\Code\GitHub\ArknightsResearch\杂项\干员信息</name>
       <extention>xlsx</extention>
       <do_not_open_newfile_init>N</do_not_open_newfile_init>
       <split>N</split>
@@ -708,7 +708,7 @@
       <field>
         <name>攻击间隔</name>
         <type>Number</type>
-        <format/>
+        <format>0.00</format>
         <title>攻击间隔</title>
         <titleStyleCell/>
         <styleCell/>
@@ -720,7 +720,7 @@
       <field>
         <name>再部署时间</name>
         <type>Number</type>
-        <format/>
+        <format>0.0</format>
         <title>再部署时间</title>
         <titleStyleCell/>
         <styleCell/>
@@ -838,18 +838,6 @@
         <hyperlinkField/>
       </field>
       <field>
-        <name>统计678章使用次数</name>
-        <type>Integer</type>
-        <format/>
-        <title>统计678章使用次数</title>
-        <titleStyleCell/>
-        <styleCell/>
-        <commentField/>
-        <commentAuthorField/>
-        <formula>N</formula>
-        <hyperlinkField/>
-      </field>
-      <field>
         <name>技能2s2d</name>
         <type>Number</type>
         <format/>
@@ -946,10 +934,22 @@
         <hyperlinkField/>
       </field>
       <field>
+        <name>统计678章使用次数</name>
+        <type>Integer</type>
+        <format/>
+        <title>统计678章使用次数</title>
+        <titleStyleCell/>
+        <styleCell/>
+        <commentField/>
+        <commentAuthorField/>
+        <formula>N</formula>
+        <hyperlinkField/>
+      </field>
+      <field>
         <name>总使用次数</name>
         <type>Integer</type>
         <format/>
-        <title>总使用次数</title>
+        <title>统计总使用次数</title>
         <titleStyleCell/>
         <styleCell/>
         <commentField/>
@@ -1019,43 +1019,9 @@
       <schema_name/>
     </partitioning>
     <connection>Arknights</connection>
-    <sql>SELECT
-  序号
-, 干员
-, 稀有度
-, 职业
-, 职业编号
-, 日本語
-, 英语
-, 阻挡数
-, 初始费用
-, 生命值
-, 攻击力
-, 防御力
-, 法抗
-, 攻击间隔
-, 再部署时间
-, s1初动
-, s1消耗
-, s1持续
-, s2初动
-, s2消耗
-, s2持续
-, s3初动
-, s3消耗
-, s3持续
-, 统计678章使用次数
-, 技能2s2d
-, s2技能dps
-, s2普攻dps
-, s2平均dps
-, 技能2s2h
-, s2技能hps
-, s2普攻hps
-, s2平均hps
-, 总使用次数
+    <sql>SELECT *
 FROM "public".operators
-</sql>
+ORDER BY 序号;</sql>
     <limit/>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -1618,6 +1584,29 @@ FROM "public".operators
       <value-meta>
         <type>Integer</type>
         <storagetype>normal</storagetype>
+        <name>统计678章使用次数</name>
+        <length>4</length>
+        <precision>0</precision>
+        <origin>表输入</origin>
+        <comments>统计678章使用次数</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>zh_CN</date_format_locale>
+        <date_format_timezone>Asia/Shanghai</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
         <name>技能2s2d</name>
         <length>9</length>
         <precision>0</precision>
@@ -1784,29 +1773,6 @@ FROM "public".operators
         <precision>0</precision>
         <origin>表输入</origin>
         <comments>s2平均hps</comments>
-        <conversion_Mask>####0;-####0</conversion_Mask>
-        <decimal_symbol>.</decimal_symbol>
-        <grouping_symbol>,</grouping_symbol>
-        <currency_symbol/>
-        <trim_type>none</trim_type>
-        <case_insensitive>N</case_insensitive>
-        <collator_disabled>Y</collator_disabled>
-        <collator_strength>0</collator_strength>
-        <sort_descending>N</sort_descending>
-        <output_padding>N</output_padding>
-        <date_format_lenient>N</date_format_lenient>
-        <date_format_locale>zh_CN</date_format_locale>
-        <date_format_timezone>Asia/Shanghai</date_format_timezone>
-        <lenient_string_to_number>N</lenient_string_to_number>
-      </value-meta>
-      <value-meta>
-        <type>Integer</type>
-        <storagetype>normal</storagetype>
-        <name>统计678章使用次数</name>
-        <length>4</length>
-        <precision>0</precision>
-        <origin>表输入</origin>
-        <comments>统计678章使用次数</comments>
         <conversion_Mask>####0;-####0</conversion_Mask>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
