@@ -675,6 +675,18 @@
         <group/>
       </field>
       <field>
+        <name>部署位</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+      </field>
+      <field>
         <name>日本語</name>
         <type>String</type>
         <length>-1</length>
@@ -723,7 +735,7 @@
         <group/>
       </field>
       <field>
-        <name>初始费用</name>
+        <name>初始部署费用</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -735,7 +747,7 @@
         <group/>
       </field>
       <field>
-        <name>生命值</name>
+        <name>生命上限</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -747,7 +759,7 @@
         <group/>
       </field>
       <field>
-        <name>攻击力</name>
+        <name>攻击</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -759,7 +771,7 @@
         <group/>
       </field>
       <field>
-        <name>防御力</name>
+        <name>防御</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -771,7 +783,7 @@
         <group/>
       </field>
       <field>
-        <name>法抗</name>
+        <name>法术抗性</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -807,7 +819,67 @@
         <group/>
       </field>
       <field>
-        <name>s1初动</name>
+        <name>潜能2</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+      </field>
+      <field>
+        <name>潜能3</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+      </field>
+      <field>
+        <name>潜能4</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+      </field>
+      <field>
+        <name>潜能5</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+      </field>
+      <field>
+        <name>潜能6</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+      </field>
+      <field>
+        <name>技能一初始</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -819,7 +891,7 @@
         <group/>
       </field>
       <field>
-        <name>s1消耗</name>
+        <name>技能一消耗</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -831,7 +903,7 @@
         <group/>
       </field>
       <field>
-        <name>s1持续</name>
+        <name>技能一持续</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -843,7 +915,7 @@
         <group/>
       </field>
       <field>
-        <name>s2初动</name>
+        <name>技能二初始</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -855,7 +927,7 @@
         <group/>
       </field>
       <field>
-        <name>s2消耗</name>
+        <name>技能二消耗</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -867,7 +939,7 @@
         <group/>
       </field>
       <field>
-        <name>s2持续</name>
+        <name>技能二持续</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -879,7 +951,7 @@
         <group/>
       </field>
       <field>
-        <name>s3初动</name>
+        <name>技能三初始</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -891,7 +963,7 @@
         <group/>
       </field>
       <field>
-        <name>s3消耗</name>
+        <name>技能三消耗</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -903,7 +975,7 @@
         <group/>
       </field>
       <field>
-        <name>s3持续</name>
+        <name>技能三持续</name>
         <type>Integer</type>
         <length>-1</length>
         <precision>-1</precision>
@@ -1207,38 +1279,48 @@
         <name2/>
       </key>
       <value>
-        <name>阻挡数</name>
-        <rename>阻挡数</rename>
+        <name>s1初动</name>
+        <rename>技能一初始</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>初始费用</name>
-        <rename>初始费用</rename>
+        <name>s1持续</name>
+        <rename>技能一持续</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>生命值</name>
-        <rename>生命值</rename>
+        <name>s1消耗</name>
+        <rename>技能一消耗</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>攻击力</name>
-        <rename>攻击力</rename>
+        <name>s2初动</name>
+        <rename>技能二初始</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>防御力</name>
-        <rename>防御力</rename>
+        <name>s2持续</name>
+        <rename>技能二持续</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>法抗</name>
-        <rename>法抗</rename>
+        <name>s2消耗</name>
+        <rename>技能二消耗</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>攻击间隔</name>
-        <rename>攻击间隔</rename>
+        <name>s3初动</name>
+        <rename>技能三初始</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>s3持续</name>
+        <rename>技能三持续</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>s3消耗</name>
+        <rename>技能三消耗</rename>
         <update>Y</update>
       </value>
       <value>
@@ -1247,48 +1329,58 @@
         <update>Y</update>
       </value>
       <value>
-        <name>s1初动</name>
-        <rename>s1初动</rename>
+        <name>初始费用</name>
+        <rename>初始部署费用</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s1消耗</name>
-        <rename>s1消耗</rename>
+        <name>干员</name>
+        <rename>干员</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s1持续</name>
-        <rename>s1持续</rename>
+        <name>序号</name>
+        <rename>序号</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s2初动</name>
-        <rename>s2初动</rename>
+        <name>攻击间隔</name>
+        <rename>攻击间隔</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s2消耗</name>
-        <rename>s2消耗</rename>
+        <name>日本語</name>
+        <rename>日本語</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s2持续</name>
-        <rename>s2持续</rename>
+        <name>生命值</name>
+        <rename>生命上限</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s3初动</name>
-        <rename>s3初动</rename>
+        <name>稀有度</name>
+        <rename>稀有度</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s3消耗</name>
-        <rename>s3消耗</rename>
+        <name>职业</name>
+        <rename>职业</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>s3持续</name>
-        <rename>s3持续</rename>
+        <name>职业编号</name>
+        <rename>职业编号</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>英语</name>
+        <rename>英语</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>阻挡数</name>
+        <rename>阻挡数</rename>
         <update>Y</update>
       </value>
     </lookup>
