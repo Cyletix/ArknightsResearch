@@ -435,6 +435,27 @@
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
+    <notepad>
+      <note>从明日方舟.xlsx这个文件导入到数据库的operators表中</note>
+      <xloc>0</xloc>
+      <yloc>0</yloc>
+      <width>452</width>
+      <heigth>33</heigth>
+      <fontname>Microsoft YaHei UI</fontname>
+      <fontsize>11</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>205</backgroundcolorgreen>
+      <backgroundcolorblue>112</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
   </notepads>
   <connection>
     <name>Arknights</name>
@@ -511,7 +532,7 @@
     <hop>
       <from>DPS/DPH</from>
       <to>统计</to>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
     </hop>
   </order>
   <step>

@@ -1,16 +1,23 @@
+'''
+Description: 文件描述
+Author: Cyletix
+Date: 2022-03-17 20:28:30
+LastEditTime: 2022-03-18 11:35:29
+FilePath: \ArknightsResearch\get_op_info_new.py
+'''
+import sys
 import pandas as pd
 from lxml import etree
 import os
 import pg_query as pgq
 global df
-import sys
 
 
-#这里都是定义的获取单项数据的函数
-def get_info(html):  #info
+# 这里都是定义的获取单项数据的函数
+def get_info(html):  # info
     local_column = ['干员', '英文', '上线时间']
-    codename = html.xpath('//*[@id="charname"]')[0].text  #干员
-    english = html.xpath('//*[@id="charname-en"]')[0].text  #英文
+    codename = html.xpath('//*[@id="charname"]')[0].text  # 干员
+    english = html.xpath('//*[@id="charname-en"]')[0].text  # 英文
     try:
         join_time = html.xpath(
             '//*[@id="mw-content-text"]/div/table[tbody/tr/th="上线时间\n"]/tbody/tr[2]/td'
@@ -24,7 +31,7 @@ def get_info(html):  #info
     return local_column, [codename, english, join_time]
 
 
-def get_attribute(html):  #attribute
+def get_attribute(html):  # attribute
     local_column = [
         '部署位',
         '阻挡数',
@@ -38,7 +45,7 @@ def get_attribute(html):  #attribute
     ]
     try:
         deploy_pos = html.xpath(
-            '//*[@id="chartag2"]/div/a')[0].text  #部署位,近战/远程,新增词条
+            '//*[@id="chartag2"]/div/a')[0].text  # 部署位,近战/远程,新增词条
         life = html.xpath(
             '//*[@id="mw-content-text"]/div/table[tbody/tr/th="生命上限\n"]/tbody/tr[th="生命上限\n"]/td[3]'
         )[0].text.strip('\n')
@@ -74,7 +81,7 @@ def get_attribute(html):  #attribute
         )[0].text.strip('\n')
     except (IndexError):
         deploy_pos = life = attack = defence = antimagic = redeploy = cost = block = atk_interval = life_rely = attack_rely = defence_rely = None
-    if life == '——':  #低星干员空缺情况
+    if life == '——':  # 低星干员空缺情况
         life = html.xpath(
             '//*[@id="mw-content-text"]/div/table[tbody/tr/th="生命上限\n"]/tbody/tr[th="生命上限\n"]/td[2]'
         )[0].text.strip('\n')
@@ -88,7 +95,7 @@ def get_attribute(html):  #attribute
             '//*[@id="mw-content-text"]/div/table[tbody/tr/th="法术抗性\n"]/tbody/tr[th="法术抗性\n"]/td[2]'
         )[0].text.strip('\n')
 
-    #是否计算信赖
+    # 是否计算信赖
     rely_flag = 0
     if rely_flag == 1:
         if life_rely != '':
@@ -111,7 +118,7 @@ def get_attribute(html):  #attribute
         ]
 
 
-def get_skill(html):  #skill
+def get_skill(html):  # skill
     local_column = [
         '技能一初始',
         '技能一消耗',
@@ -126,38 +133,38 @@ def get_skill(html):  #skill
     try:
         s1_start = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能1")]/following-sibling::table/tbody/tr[9]/td[3]'
-        )[0].text.strip('\n')  #技能1
+        )[0].text.strip('\n')  # 技能1
         s1_cost = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能1")]/following-sibling::table/tbody/tr[9]/td[4]'
-        )[0].text.strip('\n')  #技能1
+        )[0].text.strip('\n')  # 技能1
         s1_durate = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能1")]/following-sibling::table/tbody/tr[9]/td[5]'
-        )[0].text.strip('\n')  #技能1
+        )[0].text.strip('\n')  # 技能1
     except (IndexError):
         s1_start = s1_cost = s1_durate = None
     try:
         s2_start = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能2")]/following-sibling::table/tbody/tr[9]/td[3]'
-        )[0].text.strip('\n')  #技能2
+        )[0].text.strip('\n')  # 技能2
         s2_cost = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能2")]/following-sibling::table/tbody/tr[9]/td[4]'
-        )[0].text.strip('\n')  #技能2
+        )[0].text.strip('\n')  # 技能2
         s2_durate = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能2")]/following-sibling::table/tbody/tr[9]/td[5]'
-        )[0].text.strip('\n')  #技能2
+        )[0].text.strip('\n')  # 技能2
     except (IndexError):
         s2_start = s2_cost = s2_durate = None
     try:
         s3_start = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能3")]/following-sibling::table/tbody/tr[9]/td[3]'
-        )[0].text.strip('\n')  #技能3
+        )[0].text.strip('\n')  # 技能3
         s3_cost = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能3")]/following-sibling::table/tbody/tr[9]/td[4]'
-        )[0].text.strip('\n')  #技能3
+        )[0].text.strip('\n')  # 技能3
         s3_durate = html.xpath(
             '//*[@id="mw-content-text"]/div/p[contains(b,"技能3")]/following-sibling::table/tbody/tr[9]/td[5]'
-        )[0].text.strip('\n')  #技能3
-    except (IndexError):  #空缺情况
+        )[0].text.strip('\n')  # 技能3
+    except (IndexError):  # 空缺情况
         s3_start = s3_cost = s3_durate = None
     return local_column, [
         s1_start, s1_cost, s1_durate, s2_start, s2_cost, s2_durate, s3_start,
@@ -200,8 +207,8 @@ def get_potential(html):
     return local_column, ptt
 
 
-#这个是组装函数,调用前面的所有单项函数,把数据拼接起来
-def assemble(name, html):  #没加信赖，后面还得改
+# 这个是组装函数,调用前面的所有单项函数,把数据拼接起来
+def assemble(name, html):  # 没加信赖，后面还得改
     global df
     if 'df' not in globals():
         columns = get_info(html)[0] + get_attribute(html)[0] + get_skill(
@@ -215,28 +222,77 @@ def assemble(name, html):  #没加信赖，后面还得改
     potential = get_potential(html)[1]
     assemble_data = info + attribute + skill + potential
     # df=df.append(dict(zip(columns,assemble_data)), ignore_index=True)
-    df.loc[len(df)] = assemble_data  #插入一行list到不同列,可以原封不动执行多次插入多行
+    df.loc[len(df)] = assemble_data  # 插入一行list到不同列,可以原封不动执行多次插入多行
     return df
 
 
-#下面是测试内容,如果直接执行程序就从这里开始,需要修改保存信息也从这里修改
+# 导出到excel
+def result_to_excel():
+    save_path = '杂项/wiki爬取干员信息8.xlsx'
+    if sys.gettrace():  # 判断程序是否在终端执行
+        input('Press Enter to save data:')
+    df.to_excel(save_path, index=False)
+    if os.path.exists(save_path):  # 判断是否保存成功
+        print('Saved success!')
+        print(save_path)
+
+
+# 插入到sql
+def result_to_sql():
+    from psycopg2 import connect
+    arkdb = connect(database="Arknights",
+                    user="postgres",
+                    password="shen124357689",
+                    host="127.0.0.1",
+                    port="5432")
+    cursor = arkdb.cursor()
+
+    column = '生命'
+
+    # 查询数量
+    cursor.execute("""
+    SELECT COUNT(*) FROM operators;""")
+    count = cursor.fetchone()[0]
+    # 查询干员信息
+    cursor.execute("""
+    SELECT {0} FROM operators
+    ORDER BY 序号;""".format(column))
+
+    cursor.execute('''
+    INSERT INTO public.base_info (id, codename, star, profession, codename_jp, codename_en, add_time, order_id)
+    VALUES (DEFAULT, '令', 6, '辅助', NULL, 'Ling', '2022-01-25 16:00:00.000000', NULL);
+    '''.format(column))
+
+    column_list = []
+    for i in range(count):
+        row = cursor.fetchone()[0]
+        column_list.append(row)
+
+
+'''
+    INSERT INTO public.base_info (id, codename, star, profession, codename_jp, codename_en, add_time, order_id)
+    VALUES (DEFAULT, '令', 6, '辅助', NULL, 'Ling', '2022-01-25 16:00:00.000000', NULL);
+'''
+# df.loc[2]['干员']
+
+
+# 下面是测试内容,如果直接执行程序就从这里开始,需要修改保存信息也从这里修改
 if __name__ == '__main__':
     # codename_list=['刻刀','克洛丝']#单项调试
     # codename_list =pgq.pg_query('干员')
     # codename_list[codename_list.index('阿米娅（近卫）')]='阿米娅(近卫)'
-    codename_list = ['令', '老鲤', '夜半']
+    codename_list = ['澄闪', '夏栎', '见行者', '风丸', '菲亚梅塔']
     # codename_list=codename_list[codename_list.index('安赛尔'):]#从中间截取位置开始
-    save_path = '杂项/wiki爬取干员信息7.xlsx'
     for codename in codename_list:
         cache_path = 'cache/{} - PRTS - 玩家自由构筑的明日方舟中文Wiki.html'.format(
-            codename)  #缓存路径
+            codename)  # 缓存路径
         cache_flag = not os.path.isfile(cache_path)
         if len(codename) < 4:
             prt_split = '\t\t'
         elif len(codename) >= 4:
             prt_split = '\t'
         # cache_flag = 1  #强制从网页爬取
-        if cache_flag:  #从网页爬取并保存为缓存
+        if cache_flag:  # 从网页爬取并保存为缓存
             wiki_url = 'https://prts.wiki/w/'
             operator_url = wiki_url + codename
             import time
@@ -260,7 +316,7 @@ if __name__ == '__main__':
                 codename, prt_split,
                 codename_list.index(codename) + 1, len(codename_list)))
             time.sleep(5)
-        else:  #从缓存读取
+        else:  # 从缓存读取
             with open(cache_path, 'r', encoding='utf-8') as f:
                 res_text = f.read()
             print('{0}{1}缓存读取成功({2}/{3})'.format(
@@ -268,18 +324,7 @@ if __name__ == '__main__':
                 codename_list.index(codename) + 1, len(codename_list)))
         html = etree.HTML(res_text)
         df = assemble(codename, html)
-    df[['上线时间']] = df[['上线时间']].apply(pd.to_datetime)  #修改df单列的数据类型
+    df[['上线时间']] = df[['上线时间']].apply(pd.to_datetime)  # 修改df单列的数据类型
 
-    #导出到excel
-    if sys.gettrace():
-        input('Press Enter to save data:')
-    df.to_excel(save_path, index=False)
-    if os.path.exists(save_path):
-        print('Saved success!')
-        print(save_path)
-
-    #插入到sql
-'''
-    INSERT INTO public.base_info (id, codename, star, profession, codename_jp, codename_en, add_time, order_id)
-    VALUES (DEFAULT, '令', 6, '辅助', NULL, 'Ling', '2022-01-25 16:00:00.000000', NULL);
-'''
+    # result_to_excel()  #导出到excel
+    result_to_sql()  # 插入到sql
