@@ -4,7 +4,7 @@
 
 This is some numerical calculations, statistics, regression analysis and practical gadgets about Tomorrow’s Ark initiated by personal interest. It is updated from time to time and may be shelved forever, it all depends on my mood and whether my work is busy. If you are interested, you can make it together or initiate a branch based on this project etc., all acceptable.
 
-目前有以下子项目在开发计划中:
+目前有以下子项目在开发计划中(无限咕咕咕...):
 
 1. 自动辅助制表(Automatic Auxiliary Tabulation)
 
@@ -16,37 +16,41 @@ This is some numerical calculations, statistics, regression analysis and practic
 
 # 1.自动辅助制表
 
-* [x] av,BV和视频链接(https地址)之间的转换
+* [x] av/BV/https地址之间的转换
 
-* [x] 根据BV或链接获取视频发布时间
+* [x] 根据BV或链接获取视频发布时间/作者信息
 
-* [x] 自动填写腾讯在线文档(difficult)
+* [ ] 自动填写腾讯在线文档(difficult)
 
-* [x] 在arkrec.com提交信息(difficult)
+* [ ] 在arkrec.com提交信息(difficult)
 
-# 2.干员信息库
+# 2.干员数据库
 
-* [x] 建立数据库
+* [x] 建立数据库，确认数据库字段
 
-* [x] 从wiki爬取干员信息
+* [x] 从PRTS获取干员信息的html文件
+
+* [ ] 处理html文件得到干员信息
 
 * [x] 从数据库导出信息到Excel表格
 
-* [x] DPS计算(difficult)
+* [ ] DPS计算(difficult)
 
-  老流程
+  ## 老入库流程
 
-* [ ] get\\\_op\\\_info.py    获取干员信息
+* [ ] get_op_info.py    获取干员信息
 
 * [ ] 手动填写到    明日方舟.xlsx    表格
 
 * [ ] 运行kettle工程，导入PostgreSQL数据库
 
-* [ ] 
+  ## 新入库流程
 
-  新流程
+* [ ] get_op_info_new.py 获取干员信息后自动插入到Arknights.sd.source_data数据库
 
-* [ ] 
+* [ ] 用kettle工程/SQL语句/Python脚本对sd数据二次处理
+
+* [ ] 插入到public业务表
 
 # 3.对应理论
 

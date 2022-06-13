@@ -1,12 +1,11 @@
 '''
-Description: 批量修改缓存网页的名称
+Description: 批量修改网页缓存文件的名称
 Author: Cyletix
 Date: 2022-02-19 21:59:37
 LastEditTime: 2022-02-19 22:25:43
 FilePath: \ArknightsResearch\temp.py
 '''
 import os
-import re
 
 file_dir = 'D:\OneDrive\Code\GitHub\ArknightsResearch\cache\\'
 fileList = os.listdir(file_dir)

@@ -150,7 +150,7 @@ output_path='D:\Code\GitHub\ArknightsResearch\wiki爬取干员信息.py'
 # wb.save()
 # wb.close()
 
-df.to_excel('杂项/wiki爬取干员信息5.xlsx',index=False)
+df.to_excel('result/wiki爬取干员信息5.xlsx',index=False)
 
 # 解决pandas .to_excel不覆盖已有sheet的问题
 # https://www.jb51.net/article/152453.htm

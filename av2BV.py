@@ -1,3 +1,10 @@
+'''
+Description: 文件描述
+Author: Cyletix
+Date: 2021-11-09 09:46:21
+LastEditTime: 2022-03-27 11:53:11
+FilePath: \ArknightsResearch\av2BV.py
+'''
 import requests
 import json
 import random

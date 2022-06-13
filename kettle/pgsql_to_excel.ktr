@@ -523,7 +523,7 @@
     <appendLines>N</appendLines>
     <add_to_result_filenames>N</add_to_result_filenames>
     <file>
-      <name>D:\OneDrive\Code\GitHub\ArknightsResearch\杂项\干员信息</name>
+      <name>D:\OneDrive\Code\GitHub\ArknightsResearch\result\干员信息</name>
       <extention>xlsx</extention>
       <do_not_open_newfile_init>N</do_not_open_newfile_init>
       <split>N</split>

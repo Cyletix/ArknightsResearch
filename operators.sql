@@ -1,5 +1,5 @@
--- DROP TABLE IF EXISTS operators;--删库,慎用
--- DELETE FROM operators;--删库保留表结构,也慎用
+---- DROP TABLE IF EXISTS operators;--删库,慎用
+---- DELETE FROM operators;--删库保留表结构,也慎用
 
 --创建表结构
 SELECT * FROM operators;

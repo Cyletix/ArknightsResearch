@@ -47,7 +47,7 @@ def print_matrix(column):  # 从PostgreSQL获取
 
     print(prt_str)
 
-    with open(r'杂项/干员阵列({}×{}).txt'.format(row, column), 'w', encoding='utf-8') as f:
+    with open(r'result/干员阵列({}×{}).txt'.format(row, column), 'w', encoding='utf-8') as f:
         f.write(prt_str)
     arkdb.close()
 
@@ -79,7 +79,7 @@ def print_matrix_from_xls(column):  # 从excel获取
         col_num += 1
         row_num += 1
 
-    with open(r'杂项/干员阵列({0}×{1}-{2}){3}.txt'.format(row, column, count, add_explain), 'w', encoding='utf-8') as f:
+    with open(r'result/干员阵列({0}×{1}-{2}){3}.txt'.format(row, column, count, add_explain), 'w', encoding='utf-8') as f:
         f.write(prt_str)
 
 
