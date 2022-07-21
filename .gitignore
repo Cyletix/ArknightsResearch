@@ -4,8 +4,10 @@ arknights-hg-1540
 .gitignore
 
 cache
+result
 非线性回归.ipynb
 test.py
+mypgsql
 
 ###########以下为自动生成###############
 # Byte-compiled / optimized / DLL files

@@ -173,32 +173,7 @@ def result_to_excel():
         print(save_path)
 
 
-#插入到sql
-def result_to_sql():
-    from psycopg2 import connect
-    arkdb = connect(database="Arknights",user="postgres",password="shen124357689", host="127.0.0.1", port="5432")
-    cursor = arkdb.cursor()
-
-    column = '生命'
-
-    #查询数量
-    cursor.execute("""
-    SELECT COUNT(*) FROM operators;""")
-    count = cursor.fetchone()[0]
-    #查询干员信息
-    cursor.execute("""
-    SELECT {0} FROM operators
-    ORDER BY 序号;""".format(column))
-
-    cursor.execute('''
-    INSERT INTO public.base_info (id, codename, star, profession, codename_jp, codename_en, add_time, order_id)
-    VALUES (DEFAULT, '令', 6, '辅助', NULL, 'Ling', '2022-01-25 16:00:00.000000', NULL);
-    '''.format(column))
-
-    column_list = []
-    for i in range(count):
-        row = cursor.fetchone()[0]
-        column_list.append(row)
+from mypgsql import result_to_sql2
 
 
     '''

@@ -7,8 +7,9 @@ LastEditTime: 2022-02-08 21:28:10
 FilePath: \ArknightsResearch\get_link_info.py
 '''
 from requests import get
-from time import strptime
 from lxml import etree
+import pyperclip
+
 def get_link_info(link):
     domain = 'https://www.bilibili.com/video/'
     split_list=link.split('/')
@@ -30,106 +31,57 @@ def get_link_info(link):
         #link='www.bilibili.com/video/BV1db4y1e7R6' 
     else:
         return '链接类型好怪哦,你是不是填错了'
-    print(link_type)
+        print(link_type)
     
     res = get(url)
     res_text=res.text
     html = etree.HTML(res_text)
-    video_time=html.xpath('//*[@id="viewbox_report"]/div[@class="video-data"]/span[3]')[0].text
-    video_author=html.xpath('//*[@id="v_upinfo"]/div[@class="up-info_right"]/div[@class="name"]/a[@target]')[0].text.strip('\n ')
-    result='{0}\t{1}\t{2}'.format(video_author,url,video_time)
+    
+    # video_time=html.xpath('//*[@id="viewbox_report"]/div[@class="video-data"]/span[@class="pudate item"]/text()')[0].strip('\n ')
+    # video_time=html.xpath('//*[@id="viewbox_report"]/div/div/span[3]/span/span/text()')[0].strip('\n ')
+    video_time=html.xpath('//*[@class="pudate-text"]/text()')[0].strip('\n ')
+
+    video_author=html.xpath('//*[@id="v_upinfo"]/div[@class="up-info_right"]/div[@class="name"]/a[@target]/text()')[0].strip('\n ')
+
+    # result='{0}\t{1}\t{2}'.format(video_author,url,video_time)
+    result='{}\t{}'.format(url,video_time)#仅复制url和日期
     print(result)
     return result
 
 
-
-
-
-
-
-
-# def get_BV_time(BV):
-#     import requests
-#     from time import strptime
-#     domain = 'https://www.bilibili.com/video/'
-#     url = domain+BV
-    
-#         # 转换格式
-#     link_type='link'
-
-#     if link_type=='link':
-#         # BV号转链接
-#         link_list = []
-#         for BV in BV_link_list:
-#             if (len(BV)==12):
-#                 link_list.append(domain+BV)
-#             else:
-#                 link_list.append(BV)
-#         for link in link_list:
-#             print(link)
-
-#     elif link_type=='BV':
-#         # 链接转BV号
-#         BV_list = []
-#         for BV in BV_link_list:
-#             if (BV.find(domain) == 0):
-#                 BV_list.append(BV.split('/')[-1])
-#             else:
-#                 BV_list.append(BV)
-
-
-#     r = requests.get(url)
-
-#     start_pos = r.text.find('content="20')+9
-#     time_str = r.text[start_pos:start_pos+19]
-
-#     '''判断是否是一个有效的日期字符串'''
-#     try:
-#         strptime(time_str, "%Y-%m-%d %H:%M:%S")
-#         return time_str
-#     except:
-#         return False
-
-
 if __name__=='__main__':
-    link_list=['https://www.bilibili.com/video/BV1N44y1W78g',
-               'https://www.bilibili.com/video/BV1F3411E7XD',
-               'https://www.bilibili.com/video/BV1kq4y1h77B',
-               'https://www.bilibili.com/video/BV1fT4y1k7gM']
+    link_list=[
+'BV1i44y137J5',
+'BV1Su411C76E',
+'BV1iF411g7j7',
+'BV1Y94y1d7Zd',
+'BV1c3411T71m',
+'BV1US4y1h7FR',
+'BV1ra411Y7Xe',
+'BV1g5411m7rw',
+'BV1Ha411Y7nY',
+'BV1HL4y1V7To',
+'BV1tF411g7S6',
+'BV1CY4y1e7ud',
+'BV1G5411m7LC',
+'BV1DF411j76C',
+'BV11Y4y1e7hk',
+'https://www.bilibili.com/video/BV1m3411K7jr?p=5',
+'BV1VZ4y1m77y',
+'BV1kY4y187Qj',
+'https://www.bilibili.com/video/BV1m3411K7jr?p=6',
+'https://www.bilibili.com/video/BV1HR4y1K7q1',
+'BV1CS4y1Y7xm',
+'BV1Hu41167rZ',
+'BV1iS4y1h7ek',
+'BV1V44y1G7of',
+'BV1Wi4y1U7DY',
+'https://www.bilibili.com/video/BV1Sa411Y7xJ',
+'BV163411T7iK',
+'BV163411T7iK',
+'BV1H5411m7Bd',
+'BV1Dr4y1t7iG',
+]
     for link in link_list:
-        get_link_info(link)
-'''
-    import pandas as pd
-    while(True):
-        get_way=input("请输入获取BV号方式：1为从excel获取，2为命令行手动输入\n")
-        if get_way=='1':
-            print("从excel获取BV号:")
-            excel_path = "E:\下载\无精二表 (8).xlsx"
-
-            df = pd.read_excel(excel_path, sheet_name='14.密林悍将归来')
-            BV_link_list = df['链接']        
-            break
-        elif get_way=='2':
-            print("手动输入BV和link,以end结尾:")
-            BV_link_list=[]
-            while(True):
-                temp=input()
-                if temp=='end':
-                    break
-                BV_link_list.append(temp)
-            break
-        else:
-            print("输入错误，请重新输入")
-            continue
-    domain = 'https://www.bilibili.com/video/'  
-    # 自动获取视频发布日期,不过操作太频繁可能会被拦截，需要手动访问输入验证码
-    for BV in BV_link_list:
-        try:
-            if (BV.find(domain) == 0):
-                BV = BV.split('/')[-1]
-            print(get_BV_time(BV))
-        except:
-            print('啊叻？视频不见了？视频内容已被UP主删除，视频无法观看，敬请谅解。')
-            continue
-'''
-
+        pyperclip.copy(get_link_info(link))#将结果复制到剪切板
+        input('已复制此条目到剪切板,请粘贴到表格后按任意键继续:')

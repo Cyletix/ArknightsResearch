@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+
 '''
 Description: 文件描述
 Author: Cyletix
@@ -5,14 +7,13 @@ Date: 2022-03-17 20:28:30
 LastEditTime: 2022-05-09 02:32:00
 FilePath: \ArknightsResearch\get_op_info.py
 '''
-from ast import keyword
 import sys
 import pandas as pd
 from lxml import etree
 import os
-import re
 from datetime import datetime
-# import pg_query as pgq
+from mypgsql import pandas_sqlalchemy,search_sql
+
 
 global data_dict,codename,failed_list
 failed_list=[]
@@ -31,13 +32,13 @@ def get_data(html):
     data_dict = {}
 
     #base_info
-    def get_data_by_code(field:str,expresion:str):
-        try:
-            exec("data_dict[{0}] = {1}".format(field,expresion))
-        except:
-            failed_list.append(codename)
-            data_dict[field] = None
-        return data_dict[field]
+    # def get_data_by_code(field:str,expresion:str):
+    #     try:
+    #         exec("data_dict[{0}] = {1}".format(field,expresion))
+    #     except:
+    #         failed_list.append(codename)
+    #         data_dict[field] = None
+    #     return data_dict[field]
     # get_data_by_code('干员','''html.xpath('//*[@id="charname"]/text()')[0]''')
     # get_data_by_code('稀有度','''int(html.xpath('//*[@id="rare"]/text()')[0]) + 1''')
     # get_data_by_code('职业','''html.xpath('//*[@id="charclasstxt"]/div/a[1]/text()')[0]''')
@@ -46,11 +47,11 @@ def get_data(html):
     # get_data_by_code('上线时间','''datetime.strptime(html.xpath('//table[tbody/tr/th="上线时间\n"]/tbody/tr[2]/td/text()')[0],'%Y年%m月%d日 %H:%M\n').strftime('%Y-%m-%d %H:%M:%S') ''')
     # get_data_by_code('部署位','''html.xpath('//*[@title="近战位" or @title="远程位"]/text()')[0]''')
 
-    data_dict['干员'] = html.xpath('//*[@id="charname"]/text()')[0]  #干员
+    data_dict['干员'] = html.xpath('//*[@id="charname" or @class="charname"]/text()')[0]  #干员
     data_dict['稀有度'] = int(html.xpath('//*[@id="rare"]/text()')[0]) + 1  #稀有度
     data_dict['职业'] = html.xpath('//*[@id="charclasstxt"]/div/a[1]/text()')[0]  #职业
     data_dict['子职业'] = html.xpath('//*[@id="charclasstxt"]/div/a[2]/text()')[0]
-    data_dict['英文'] = html.xpath('//*[@id="charname-en"]/text()')[0]  #英文
+    data_dict['英文'] = html.xpath('//*[@id="charname-en"]/text()')[0].replace('\\','')  #英文
     date_str=html.xpath('//table[tbody/tr/th="上线时间\n"]/tbody/tr[2]/td/text()')[0]
     data_dict['上线时间'] = datetime.strptime(date_str,'%Y年%m月%d日 %H:%M\n').strftime('%Y-%m-%d %H:%M:%S') 
     data_dict['部署位'] = html.xpath('//*[@title="近战位" or @title="远程位"]/text()')[0]  #部署位,近战/远程,新增词条
@@ -106,8 +107,6 @@ def get_data(html):
     get_attrubute2('法术抗性-精英1 满级','tr[5]/td[3]')
     get_attrubute2('法术抗性-精英2 满级','tr[5]/td[4]')
     get_attrubute2('法术抗性-信赖加成上限','tr[5]/td[5]')
-
-
 
 
 #老获取方法,直接获取
@@ -306,11 +305,6 @@ def get_data(html):
 
     return data_dict
 ####################################################################
-
-
-
-
-
 #导出到excel
 def result_to_file(type):
     from time import strftime,localtime
@@ -328,125 +322,24 @@ def result_to_file(type):
         print('Saved success!')
         print(save_path)
 
-
-#插入到sql
-def result_to_sql(df):
-    #1.查询"Arknights".sd_test中属性为空的干员,返回干员名列表
-    #2.根据列表插入df中的数据
-    #3.
-
-
+def type_convert(df):
+    df[['上线时间']] = df[['上线时间']].apply(pd.to_datetime)  #修改df单列的数据类型
+    df[['再部署时间']] = df[['再部署时间']].apply(pd.to_numeric)
+    df[['攻击间隔']] = df[['攻击间隔']].apply(pd.to_numeric)
     
-    from psycopg2 import connect
-    arkdb = connect(database="postgres",user="postgres",password="shen124357689", host="127.0.0.1", port="5432")
-    cursor = arkdb.cursor()
-
-    column = '生命'
 
 
-    #筛选要插入的数据
-    no_data_operator=[]
-    with arkdb.cursor() as curs:
-        curs.execute("""SELECT * FROM "Arknights".sd_test;""")
-        for record in curs:
-            if record[1] is None:
-                no_data_operator.append(record[0])
-    print(no_data_operator)
-
-
-    #获取表中所有数据
-    with arkdb.cursor() as curs:
-        curs.execute("""SELECT * FROM "Arknights".sd_test;""")
-        rows=curs.fetchall()
-
-
-
-
-    with arkdb.cursor() as curs:
-        curs.executemany("""
-        UPDATE "Arknights".sd_test
-        SET "稀有度" = 6,
-            "职业"  = '重装' 
-        WHERE "干员" LIKE '泥岩'
-        """)
-
-
-
-
-
-
-    cursor.execute("""
-    INSERT INTO "Arknights".sd_test
-    VALUES (%s);
-    """%( tuple(df[df['干员']==codename].iloc[0]._values)))
-
-
-    curs.executemany(
-    """INSERT INTO "%s" (data) VALUES (%%s)""" % (args.tableName),op_row)
-
-    op_row=rows[8]
-    sql="""INSERT INTO "%s" (data) VALUES (%%s)""" % '"Arknights".sd_test',op_row
-    curs.executemany(sql)
-
-
-
-    with arkdb.cursor() as curs:
-        curs.execute(
-            """INSERT INTO %s (data)
-            SELECT data FROM Table1
-            WHERE lat=-20.004189 AND lon=-63.848004""" % (args.tableName))
-
-    #插入数据
-    codename='泥岩'
-    df[df['干员']=='泥岩']
-    with arkdb.cursor() as curs:
-        curs.executemany(
-        """INSERT INTO "%s" VALUES (%%s)""" % ('"Arknights".sd_test'),list(df[df['干员']==codename].iloc[0]._values))
-
-
-
-
-        """INSERT INTO "Arknights".sd_test VALUES({})""".format(','.join('%s' for x in list(df.keys())), list(df[df['干员']==codename].iloc[0]._values))
-        curs.execute("""INSERT INTO "Arknights".sd_test VALUES({})""".format(','.join('%s' for x in list(df.keys())), list(df[df['干员']==codename].iloc[0]._values)))
-        for record in curs:
-            print
-
-
-
-
-    #查询数量
-    cursor.execute("""
-    SELECT COUNT(*) FROM "Arknights".sd_test;""")
-    count = cursor.fetchone()[0]
-    #查询干员信息
-    cursor.execute("""
-    SELECT {0} FROM operators
-    ORDER BY 序号;""".format(column))
-
-    cursor.execute('''
-    INSERT INTO public.base_info (id, codename, star, profession, codename_jp, codename_en, add_time, order_id)
-    VALUES (DEFAULT, '令', 6, '辅助', NULL, 'Ling', '2022-01-25 16:00:00.000000', NULL);
-    '''.format(column))
-
-    column_list = []
-    for i in range(count):
-        row = cursor.fetchone()[0]
-        column_list.append(row)
-
-
-    '''
-        INSERT INTO public.base_info (id, codename, star, profession, codename_jp, codename_en, add_time, order_id)
-        VALUES (DEFAULT, '令', 6, '辅助', NULL, 'Ling', '2022-01-25 16:00:00.000000', NULL);
-        未完成
-    '''
-#df.loc[2]['干员']
 
 
 if __name__ == '__main__':
-    codename_list = ['黑键','车尔尼','濯尘芙蓉','埃拉托','归溟幽灵鲨', '艾丽妮', '流明', '掠风','泥岩','白雪','卡缇','红云','铃兰','星极','阿米娅（近卫）','铸铁','温蒂','贾维','风笛','阿米娅','布洛卡','霜叶','早露','猎蜂','赫拉格','拉普兰德','斯卡蒂','棘刺','真理','安洁莉娜','斑点','伊桑','断崖','断罪者','黑','槐琥','石棉','翎羽','微风','砾','拜松','格雷伊','森蚺','深靛','清流','杰克','蛇屠箱','松果','古米','苦艾','梅','卡夫卡','安赛尔','炎狱炎熔','米格鲁','贝娜','瑕光','绮良','战车','泡普卡','燧石','普罗旺斯','桃金娘','山','格劳克斯','泡泡','宴','夜莺','薄绿','浊心斯卡蒂','伊芙利特','乌有','巡林者','刻刀','波登可','空','红','芙蓉','灵知','凛冬','流星','天火','黑角','暗索','白金','暴行','克洛丝','狮蝎','吽','爱丽丝','嘉维尔','赤冬','可颂','苇草','极境','食铁兽','12F','月见夜','雷蛇','暴雨','罗宾','讯使','夕','闪击','雪雉','梅尔','年','野鬃','能天使','阿消','惊蛰','蜜蜡','麦哲伦','空弦','异客','傀影','巫恋','霜华','焰尾','Lancet-2','深海色','灰喉','坚雷','杜宾','桑葚','THRM-EX','安德切尔','罗比菈塔','特米米','塞雷娅','清道夫','德克萨斯','慕斯','柏喙','缠丸','末药','月禾','熔泉','崖心','四月','芬','卡达','杰西卡','嵯峨','帕拉斯','因陀罗','阿','火神','香草','陈','送葬人','艾雅法拉','锡兰','凯尔希','豆苗','絮雨','史都华德','诗怀雅','假日威龙陈','安哲拉','炎客','杜林','蓝毒','羽毛笔','苏苏洛','歌蕾蒂娅','推进之王','夜刀','幽灵鲨','格拉尼','银灰','水月','亚叶','华法琳','远牙','芳汀','煌','Castle-3','角峰','迷迭香','梓兰','稀音','灰毫','赫默','陨星','慑砂','艾丝黛尔','蚀清','炎熔','鞭刃','玫兰莎','调香师','红豆','临光','夜烟','蜜莓','夜魔','守林人','W','孑','莱恩哈特','芙兰卡','极光','远山','白面鸮','闪灵','耶拉','卡涅利安','初雪','莫斯提马','奥斯塔','空爆','灰烬','史尔特尔','琴柳','酸糖','龙舌兰','耀骑士临光','星熊','地灵','图耶','安比尔','布丁','刻俄柏','正义骑士号',]
+    # codename_list = ['黑键','车尔尼','濯尘芙蓉','埃拉托','归溟幽灵鲨', '艾丽妮', '流明', '掠风','泥岩','白雪','卡缇','红云','铃兰','星极','阿米娅（近卫）','铸铁','温蒂','贾维','风笛','阿米娅','布洛卡','霜叶','早露','猎蜂','赫拉格','拉普兰德','斯卡蒂','棘刺','真理','安洁莉娜','斑点','伊桑','断崖','断罪者','黑','槐琥','石棉','翎羽','微风','砾','拜松','格雷伊','森蚺','深靛','清流','杰克','蛇屠箱','松果','古米','苦艾','梅','卡夫卡','安赛尔','炎狱炎熔','米格鲁','贝娜','瑕光','绮良','战车','泡普卡','燧石','普罗旺斯','桃金娘','山','格劳克斯','泡泡','宴','夜莺','薄绿','浊心斯卡蒂','伊芙利特','乌有','巡林者','刻刀','波登可','空','红','芙蓉','灵知','凛冬','流星','天火','黑角','暗索','白金','暴行','克洛丝','狮蝎','吽','爱丽丝','嘉维尔','赤冬','可颂','苇草','极境','食铁兽','12F','月见夜','雷蛇','暴雨','罗宾','讯使','夕','闪击','雪雉','梅尔','年','野鬃','能天使','阿消','惊蛰','蜜蜡','麦哲伦','空弦','异客','傀影','巫恋','霜华','焰尾','Lancet-2','深海色','灰喉','坚雷','杜宾','桑葚','THRM-EX','安德切尔','罗比菈塔','特米米','塞雷娅','清道夫','德克萨斯','慕斯','柏喙','缠丸','末药','月禾','熔泉','崖心','四月','芬','卡达','杰西卡','嵯峨','帕拉斯','因陀罗','阿','火神','香草','陈','送葬人','艾雅法拉','锡兰','凯尔希','豆苗','絮雨','史都华德','诗怀雅','假日威龙陈','安哲拉','炎客','杜林','蓝毒','羽毛笔','苏苏洛','歌蕾蒂娅','推进之王','夜刀','幽灵鲨','格拉尼','银灰','水月','亚叶','华法琳','远牙','芳汀','煌','Castle-3','角峰','迷迭香','梓兰','稀音','灰毫','赫默','陨星','慑砂','艾丝黛尔','蚀清','炎熔','鞭刃','玫兰莎','调香师','红豆','临光','夜烟','蜜莓','夜魔','守林人','W','孑','莱恩哈特','芙兰卡','极光','远山','白面鸮','闪灵','耶拉','卡涅利安','初雪','莫斯提马','奥斯塔','空爆','灰烬','史尔特尔','琴柳','酸糖','龙舌兰','耀骑士临光','星熊','地灵','图耶','安比尔','布丁','刻俄柏','正义骑士号',]
+    codename_list = ['多萝西','承曦格雷伊','星源']
+    codename_list=search_sql(codename_list)
+    
+    
     #codename_list =pgq.pg_query('干员')
-    # if '阿米娅（近卫）' in codename_list:#对升变阿米娅进行特殊处理
-    #     codename_list[codename_list.index('阿米娅（近卫）')]='阿米娅(近卫)'
+    if '阿米娅（近卫）' in codename_list:#对升变阿米娅进行特殊处理
+        codename_list[codename_list.index('阿米娅（近卫）')]='阿米娅(近卫)'
     #codename_list=codename_list[codename_list.index('安赛尔'):]#从中间截取位置开始
     df = pd.DataFrame([])
     for codename in codename_list:#干员的循环
@@ -481,7 +374,7 @@ if __name__ == '__main__':
             print('{0}{1}网页爬取成功({2}/{3})'.format(
                 codename, prt_split,    
             codename_list.index(codename) + 1, len(codename_list)))
-            time.sleep(10)
+            time.sleep(5)
         else:  #从缓存读取
             with open(cache_path, 'r', encoding='utf-8') as f:    
                 res_text = f.read()
@@ -496,15 +389,61 @@ if __name__ == '__main__':
         # df = assemble(html)
         try:
             data_dict=get_data(html)
+            df=df.append(data_dict, ignore_index=True)
         except:
             failed_list.append(codename)
-        df=df.append(data_dict, ignore_index=True)
-
     print('失败列表：' , set(failed_list))
 
-    df[['上线时间']] = df[['上线时间']].apply(pd.to_datetime)  #修改df单列的数据类型
+    type_convert(df)
+
     order = ['干员','稀有度','职业','子职业','英文','上线时间','部署位','再部署时间','初始部署费用','阻挡数','攻击间隔','生命上限-精英0 1级','生命上限-精英0 满级','生命上限-精英1 满级','生命上限-精英2 满级','生命上限-信赖加成上限','攻击-精英0 1级','攻击-精英0 满级','攻击-精英1 满级','攻击-精英2 满级','攻击-信赖加成上限','防御-精英0 1级','防御-精英0 满级','防御-精英1 满级','防御-精英2 满级','防御-信赖加成上限','法术抗性-精英0 1级','法术抗性-精英0 满级','法术抗性-精英1 满级','法术抗性-精英2 满级','法术抗性-信赖加成上限','技能1 技能名称','技能1 回复类型','技能1 触发类型','技能1 LV7 初始','技能1 LV7 消耗','技能1 LV7 持续','技能2 技能名称','技能2 回复类型','技能2 触发类型','技能2 LV7 初始','技能2 LV7 消耗','技能2 LV7 持续','技能3 技能名称','技能3 回复类型','技能3 触发类型','技能3 LV7 初始','技能3 LV7 消耗','技能3 LV7 持续','潜能2','潜能3','潜能4','潜能5','潜能6']
-    df = df[order]#调整column顺序
-                      
-    result_to_file('csv')  #导出到excel/csv
-    result_to_sql(df)  #插入到sql
+    df = df[order] #调整column顺序
+    df=df.replace('——',None) #替换'——'属性缺失项为空值
+    # result_to_file('csv')  #导出到excel/csv
+    pandas_sqlalchemy(df)  #插入到sql
+
+# '干员'
+# '稀有度'
+# '职业'
+# '子职业'
+# '英文'
+# '上线时间'
+# '部署位'
+# '再部署时间'
+# '初始部署费用'
+# '阻挡数'
+# '攻击间隔'
+# '生命上限-精英0 1级'
+# '生命上限-精英0 满级'
+# '生命上限-精英1 满级'
+# '生命上限-精英2 满级'
+# '生命上限-信赖加成上限'
+# '攻击-精英0 1级'
+# '攻击-精英0 满级'
+# '攻击-精英1 满级'
+# '攻击-精英2 满级'
+# '攻击-信赖加成上限'
+# '防御-精英0 1级'
+# '防御-精英0 满级'
+# '防御-精英1 满级'
+# '防御-精英2 满级'
+# '防御-信赖加成上限'
+# '法术抗性-精英0 1级'
+# '法术抗性-精英0 满级'
+# '法术抗性-精英1 满级'
+# '法术抗性-精英2 满级'
+# '法术抗性-信赖加成上限'
+# '技能1 技能名称'
+# '技能1 回复类型'
+# '技能1 触发类型'
+# '技能1 LV7 初始'
+# '技能1 LV7 消耗'
+# '技能3 触发类型'
+# '技能3 LV7 初始'
+# '技能3 LV7 消耗'
+# '技能3 LV7 持续'
+# '潜能2'
+# '潜能3'
+# '潜能4'
+# '潜能5'
+# '潜能6'

@@ -75,3 +75,10 @@ This is some numerical calculations, statistics, regression analysis and practic
 * [ ] 根据所有影响因素得出总难度
 
 * [ ] 评估准确性与合理性,找到最优方案(difficult)
+
+\[3+1\].(https://www.bilibili.com/video/BV19b4y1Y7n6?p=16&vd source=e
+
+016e29a26a85d1b1271ef1d5063100f). #血白
+
+```python
+```
