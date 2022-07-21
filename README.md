@@ -1,6 +1,6 @@
 # 简介
 
-这是个人兴趣发起的一些关于明日方舟的一些数值计算、统计、回归分析和实用小工具，不定期更新，可能会一直鸽下去，一切取决于我的心情和工作是否忙。如有兴趣可以一起制作或根据此项目发起一个分支等方式，都是可以接受的。
+这是个人兴趣发起的一些关于明日方舟的一些数值计算、统计、回归分析和实用小工具，不定期更新，可能会一直鸽下去，一切取决于我的心情和工作忙与否。如有兴趣可以一起制作或根据此项目发起一个分支等方式，都是可以接受的。
 
 This is some numerical calculations, statistics, regression analysis and practical gadgets about Tomorrow’s Ark initiated by personal interest. It is updated from time to time and may be shelved forever, it all depends on my mood and whether my work is busy. If you are interested, you can make it together or initiate a branch based on this project etc., all acceptable.
 
@@ -13,6 +13,8 @@ This is some numerical calculations, statistics, regression analysis and practic
 3. 对应理论(Correspondence Theory)
 
 4. 地图难度计算(Map Difficulty Calculation)
+
+5. 地图自制(Map Customized)
 
 # 1.自动辅助制表
 
@@ -30,27 +32,35 @@ This is some numerical calculations, statistics, regression analysis and practic
 
 * [x] 从PRTS获取干员信息的html文件
 
-* [ ] 处理html文件得到干员信息
+* [x] 处理html文件得到干员信息
 
-* [x] 从数据库导出信息到Excel表格
+* [x] 导入到数据库(如有需要可以分享)
 
-* [ ] DPS计算(difficult)
+* [x] 从数据库导出信息到Excel表格(多用于展示)
 
-  ## 老入库流程
+* [ ] DPS计算(这就麻烦了,回头细说)
 
-* [ ] get_op_info.py    获取干员信息
+### 入库流程v1.0
 
-* [ ] 手动填写到    明日方舟.xlsx    表格
+1. get_op_info.py    获取干员信息
 
-* [ ] 运行kettle工程，导入PostgreSQL数据库
+2. 手动填写到    明日方舟.xlsx    表格
 
-  ## 新入库流程
+3. 运行kettle工程，导入PostgreSQL数据库
 
-* [ ] get_op_info_new.py 获取干员信息后自动插入到Arknights.sd.source_data数据库
+### 入库流程v2.0
 
-* [ ] 用kettle工程/SQL语句/Python脚本对sd数据二次处理
+1. get_op_info_new.py 获取干员信息后自动插入到Arknights.sd.source_data数据库
 
-* [ ] 插入到public业务表
+2. 用kettle工程/SQL语句/Python脚本对sd数据二次处理
+
+3. 插入到public业务表
+
+### 入库流程v3.0
+
+1. 运行`get_op_info.py`, 爬取PRTS网页文件数据
+2. 用`mypgsql.py`脚本的函数插入到本地数据库sd表
+3. 用python或者sql语句处理数据,拆分到各个业务表中(did not finished)
 
 # 3.对应理论
 
@@ -76,9 +86,8 @@ This is some numerical calculations, statistics, regression analysis and practic
 
 * [ ] 评估准确性与合理性,找到最优方案(difficult)
 
-\[3+1\].(https://www.bilibili.com/video/BV19b4y1Y7n6?p=16&vd source=e
+# 5.地图自制
 
-016e29a26a85d1b1271ef1d5063100f). #血白
+嗯...我就喜欢挖坑不填
 
-```python
-```
+好像已经有人做了,而且还做得不错
