@@ -1,4 +1,14 @@
+'''
+Description: 用于根据无精二表的记录批量生成AC要的obsidian图谱需要的markdown文件
+Author: Cyletix
+Date: 2022-07-15 20:48:54
+LastEditTime: 2023-01-16 02:08:56
+FilePath: \ArknightsResearch\AC_fuck.py
+'''
+
+
 import pandas as pd
+
 from mypgsql import pg_query
 
 
@@ -31,7 +41,7 @@ if __name__=='__main__':
     # operator_list=['极境','龙舌兰','伊芙利特']
     # ACfuck(op_num,url,doctor,operator_list)
 
-    sql_list=pg_query("""SELECT * FROM "Arknights"."无精二表";""")
+    sql_list=pg_query("""SELECT * FROM arknights."无精二表" WHERE url IS NOT NULL;""")
 
     for i in range(len(sql_list)):
         Stage=sql_list[i][1]
@@ -42,7 +52,6 @@ if __name__=='__main__':
 
         print(ACfuck(op_num,url,doctor,operator_list)+'\n')
 
-        with open(r'result/ACfuck3/{}.md'.format(Stage), 'a', encoding='utf-8') as f:
+        with open(r'result/ACfuck4/{}.md'.format(Stage), 'a', encoding='utf-8') as f:
             f.write(ACfuck(op_num,url,doctor,operator_list)+'\n')
 
-    

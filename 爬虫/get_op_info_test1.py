@@ -37,8 +37,8 @@ def get_info(html):  #info
     return local_column, [codename,rare,profession, english, join_time]
 
 
-def get_attribute(html):  #attribute
-    local_column = [
+def get_attribute(html):#attribute
+    local_column=[
         '部署位',
         '阻挡数',
         '初始部署费用',
@@ -47,8 +47,7 @@ def get_attribute(html):  #attribute
         '防御',
         '法术抗性',
         '攻击间隔',
-        '再部署时间',
-    ]
+        '再部署时间',]
     try:
         deploy_pos = html.xpath('//*[@id="chartag2"]/div/a')[0].text  #部署位,近战/远程,新增词条
         life = html.xpath('//*[@id="mw-content-text"]/div/table[tbody/tr/th="生命上限\n"]/tbody/tr[th="生命上限\n"]/td[3]')[0].text.strip('\n')
