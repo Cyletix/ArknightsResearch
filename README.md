@@ -11,6 +11,7 @@ This is some numerical calculations, statistics, regression analysis and practic
 3. 对应理论(Correspondence Theory)
 4. 地图难度计算(Map Difficulty Calculation)
 5. 地图自制(Map Customized)
+6. 虚拟世界探索者(ArknightsStoryParse)
 
 # 1.自动辅助制表
 
@@ -68,3 +69,8 @@ This is some numerical calculations, statistics, regression analysis and practic
 嗯...我就喜欢挖坑不填
 
 好像已经有人做了,而且还做得不错
+
+
+# 6.虚拟世界探索者
+
+用于解析剧情和人物之间的联系, 发掘剧情线索
