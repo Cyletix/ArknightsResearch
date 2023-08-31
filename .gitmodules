@@ -1,0 +1,3 @@
+[submodule "ArknightsStoryParse"]
+	path = ArknightsStoryParse
+	url = https://github.com/Cyletix/ArknightsStoryParse.git

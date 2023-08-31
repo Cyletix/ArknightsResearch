@@ -4,7 +4,7 @@
 Description: 文件描述
 Author: Cyletix
 Date: 2022-08-11 23:42:00
-FilePath: \ArknightsResearch\爬虫\get_op_info.py
+FilePath: \ArknightsResearch\get_op_info.py
 '''
 import os
 import re
@@ -17,18 +17,20 @@ from lxml import etree
 from requests import get
 from requests.models import ChunkedEncodingError
 
-from mypgsql import pandas_sqlalchemy, search_sql
+import mypgsql
+import mypgsql2
+
 
 global data_dict,codename,failed_list
-failed_list=[]
 
 
-def insert_into_dict(field:str,evaluation):
-    try:
-        data_dict[field] = evaluation
-    except:
-        failed_list.append(codename)
-        data_dict[field] = None
+
+# def insert_into_dict(field:str,evaluation):
+#     try:
+#         data_dict[field] = evaluation
+#     except:
+#         failed_list.append(codename)
+#         data_dict[field] = None
 
 
 ###########################################################################################
@@ -288,43 +290,44 @@ def result_to_file(type):
         print('Saved success!')
         print(save_path)
 
-def type_convert(df):
-    df[['上线时间']] = df[['上线时间']].apply(pd.to_datetime)  #修改df单列的数据类型
-    df[['再部署时间']] = df[['再部署时间']].apply(pd.to_numeric)
-    df[['攻击间隔']] = df[['攻击间隔']].apply(pd.to_numeric)
-    
-
-
 
 
 if __name__ == '__main__':
-    codename_list = [
-       #'缄默德克萨斯','谜图','和弦','焰影苇草','石英','雪绒','子月','伺夜','斥罪',
-        ]
-    codename_list=search_sql(codename_list) # 自动搜索筛选不在数据库中的干员,
+    # codename_list = [
+    #    #'缄默德克萨斯','谜图','和弦','焰影苇草','石英','雪绒','子月','伺夜','斥罪',
+    #     ]
+    from read_character_data import get_name_list
+    codename_list=get_name_list()
+
+    codename_list=mypgsql.search_sql(codename_list) # 自动搜索筛选不在数据库中的干员,
     
     #codename_list =pgq.pg_query('干员')
     if '阿米娅（近卫）' in codename_list:#对升变阿米娅进行特殊处理
         codename_list[codename_list.index('阿米娅（近卫）')]='阿米娅(近卫)'
     #codename_list=codename_list[codename_list.index('安赛尔'):]#从中间截取位置开始
     df = pd.DataFrame([])
+    dict_list = []
+    failed_list=[]
     #干员循环
     for codename in codename_list:
         # codename='黑键'
         cache_path = 'cache/{} - PRTS - 玩家自由构筑的明日方舟中文Wiki.html'.format(codename)  #缓存路径
-        cache_flag = not os.path.isfile(cache_path)  #决定读取方式为缓存或网页爬取
         if len(codename) < 4:
             prt_split = '\t\t'
         elif len(codename) >= 4:
             prt_split = '\t'
-        # cache_flag = True  #debug选项,强制从网页爬取
+
+        cache_flag = not os.path.isfile(cache_path)  #决定读取方式为缓存或网页爬取
+        # cache_flag = False  #debug选项,强制从网页爬取
+
         if cache_flag:  #从网页爬取并保存为缓存
             wiki_url = 'https://prts.wiki/w/'
             operator_url = wiki_url + codename
-
+            headers = {
+'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
             while (True):
                 try:
-                    res = get(operator_url)
+                    res = get(operator_url, headers=headers)
                     break
                 except NameError:
                     time.sleep(60)
@@ -354,18 +357,37 @@ if __name__ == '__main__':
         # df = assemble(html)
         try:
             data_dict=get_data(html)
+            dict_list.append(data_dict)
             df=df.append(data_dict, ignore_index=True)
         except:
             failed_list.append(codename)
     print('失败列表：' , set(failed_list))
 
-    type_convert(df)
+    
+    # dict_list to pkl
+    import pickle
+    #save dict to pkl
+    with open('result/dict_list.pkl', 'wb') as f:
+        pickle.dump(dict_list, f)
+    #load pkl
+    with open('result/dict_list.pkl', 'rb') as f:
+        dict_list = pickle.load(f)
 
+
+    # dict_list to PostgreSQL database
+    mypgsql2.insert_data(dict_list)
+
+
+    # df to sql
     order = ['干员','稀有度','职业','子职业','英文','上线时间','部署位','再部署时间','初始部署费用','阻挡数','攻击间隔','生命上限-精英0 1级','生命上限-精英0 满级','生命上限-精英1 满级','生命上限-精英2 满级','生命上限-信赖加成上限','攻击-精英0 1级','攻击-精英0 满级','攻击-精英1 满级','攻击-精英2 满级','攻击-信赖加成上限','防御-精英0 1级','防御-精英0 满级','防御-精英1 满级','防御-精英2 满级','防御-信赖加成上限','法术抗性-精英0 1级','法术抗性-精英0 满级','法术抗性-精英1 满级','法术抗性-精英2 满级','法术抗性-信赖加成上限','技能1 技能名称','技能1 回复类型','技能1 触发类型','技能1 LV7 初始','技能1 LV7 消耗','技能1 LV7 持续','技能2 技能名称','技能2 回复类型','技能2 触发类型','技能2 LV7 初始','技能2 LV7 消耗','技能2 LV7 持续','技能3 技能名称','技能3 回复类型','技能3 触发类型','技能3 LV7 初始','技能3 LV7 消耗','技能3 LV7 持续','潜能2','潜能3','潜能4','潜能5','潜能6']
     df = df[order] #调整column顺序
+    df[['上线时间']] = df[['上线时间']].apply(pd.to_datetime)  #修改df单列的数据类型
+    df[['再部署时间']] = df[['再部署时间']].apply(pd.to_numeric)
+    df[['攻击间隔']] = df[['攻击间隔']].apply(pd.to_numeric)
     df=df.replace('——',None) #替换'——'属性缺失项为空值(此项会报警,不用管)
-    # result_to_file('csv')  #导出到excel/csv
-    pandas_sqlalchemy(df)  #插入到sql
+        # result_to_file('excel')  #导出到excel/csv
+    if input('是否使用df输出到sql?(Y/N)\n')=='Y':
+        mypgsql.pandas_sqlalchemy(df)  #插入到sql
 
 
 
