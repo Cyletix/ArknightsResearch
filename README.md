@@ -30,23 +30,29 @@ This is some numerical calculations, statistics, regression analysis and practic
 * [X] 从数据库导出信息到Excel表格(多用于展示)
 * [ ] DPS计算(这就麻烦了,回头细说)
 
-### 入库流程v1.0
+### 入库流程v0.1
 
 1. get_op_info.py    获取干员信息
 2. 手动填写到    明日方舟.xlsx    表格
 3. 运行kettle工程，导入PostgreSQL数据库
 
-### 入库流程v2.0
+### 入库流程v0.2
 
 1. get_op_info_new.py 获取干员信息后自动插入到Arknights.sd.source_data数据库
 2. 用kettle工程/SQL语句/Python脚本对sd数据二次处理
 3. 插入到public业务表
 
-### 入库流程v3.0
+### 入库流程v0.3
 
 1. 运行 `get_op_info.py`, 爬取PRTS网页文件数据
 2. 用 `mypgsql.py`脚本的函数插入到本地数据库sd表
 3. 用python或者sql语句处理数据,拆分到各个业务表中(did not finished)
+
+### 入库流程v1.0
+
+从ArknightsGameData项目中的解包数据获取信息
+
+
 
 # 3.对应理论
 
@@ -70,7 +76,12 @@ This is some numerical calculations, statistics, regression analysis and practic
 
 好像已经有人做了,而且还做得不错
 
+(弃坑)
 
 # 6.虚拟世界探索者
 
-用于解析剧情和人物之间的联系, 发掘剧情线索
+用于建立解析剧情和人物之间的联系的Obsidian库, 发掘剧情线索
+
+此项目的前置项目为干员数据库和剧情数据库
+
+子项目ArknightsStoryParse已引入到本项目中, 后续更改在子项目中开发
