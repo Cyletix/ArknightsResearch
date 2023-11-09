@@ -293,13 +293,14 @@ def result_to_file(type):
 
 
 if __name__ == '__main__':
-    # codename_list = [
-    #    #'缄默德克萨斯','谜图','和弦','焰影苇草','石英','雪绒','子月','伺夜','斥罪',
-    #     ]
-    from read_character_data import get_name_list
-    codename_list=get_name_list()
+    codename_list = [
+       '海沫',
+        ]
+    
+    # from read_character_data import get_name_list
+    # codename_list=get_name_list()
 
-    codename_list=mypgsql.search_sql(codename_list) # 自动搜索筛选不在数据库中的干员,
+    # codename_list=mypgsql.search_sql(codename_list) # 自动搜索筛选不在数据库中的干员,
     
     #codename_list =pgq.pg_query('干员')
     if '阿米娅（近卫）' in codename_list:#对升变阿米娅进行特殊处理
@@ -372,6 +373,9 @@ if __name__ == '__main__':
     #load pkl
     with open('result/dict_list.pkl', 'rb') as f:
         dict_list = pickle.load(f)
+
+
+
 
 
     # dict_list to PostgreSQL database

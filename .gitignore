@@ -2,6 +2,7 @@
 arknights-hg-1540
 .vscode
 .gitignore
+.arkresearch
 
 cache
 result
