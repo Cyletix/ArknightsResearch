@@ -1,0 +1,47 @@
+{
+    "timeline_length": 1800,
+    "actions": [
+        {
+            "name": "波登可平a",
+            "start": 0,
+            "states": [
+                {
+                    "name": "状态1",
+                    "duration": 30,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "状态2",
+                    "duration": 20,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                }
+            ],
+            "cycle": 50
+        },
+        {
+            "name": "地灵平a",
+            "start": 0,
+            "states": [
+                {
+                    "name": "状态1",
+                    "duration": 30,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 10
+                },
+                {
+                    "name": "状态2",
+                    "duration": 20,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                }
+            ],
+            "cycle": 60
+        }
+    ]
+}
