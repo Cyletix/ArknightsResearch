@@ -4,34 +4,94 @@ timelineGUI.py
 基于 PyQt5 构建明日方舟动作时间轴与覆盖率计算工具
 
 【左侧时间轴区域】
-- 显示背景网格（每100帧一条竖线及刻度），文本忽略缩放（ItemIgnoresTransformations）
-- 鼠标移动时更新一条红色竖线指示当前位置；若更新过程中发现对象已被删除，则重新创建，避免因滚轮操作而崩溃
-- 根据各动作设置的状态（含自动追加的延迟状态）周期性重复绘制至时间轴末尾
-- 左上方提供“时间轴长度(帧)”设置（默认1800帧），以及缩放滑块（仅缩放图形部分，文字固定大小）
-- 最上方显示所有动作中【有效】状态的并集区域，采用与各动作相同的样式、行高，并紧贴上方排列
+- 背景网格每100帧一条竖线，刻度文字放在总覆盖轴上方
+- 鼠标移动时更新红色指示线；异常时重新创建
+- 根据各动作状态（含自动追加的延迟状态）周期性重复绘制至时间轴末尾
+- 左上方提供“时间轴长度(帧)”设置（默认1800帧）和缩放滑块（仅缩放图形部分，文字固定）
+- 总覆盖轴放在最上方，刻度文字位于其上，背景填充色取反（暗→白，亮→黑），高度为单行高度的一半，
+  各动作名称文字与其对应的时间轴贴紧
 
 【右侧参数设置面板】
-- 面板最低宽度设置为700像素、最低高度500像素，保证内容完整显示且无横向滚动条
-- 每个动作条目（OperatorActionWidget）包含动作名称、起始帧、删除按钮
-- 每个动作下有多个状态条目（StateWidget），每个状态条目包含：
-    - 状态名称、持续帧、颜色选择（下拉预置 red、transparent、blue、green、yellow、black，同时可自定义）
-    - “有效”复选框（仅选中状态参与覆盖率计算）
-    - “等待帧”（单位帧，默认0；若大于0，则在该状态后自动追加一个名称“延迟开启”、颜色透明、无效的延迟状态）
-    - 删除状态按钮
-- 面板底部提供“添加动作”、“更新显示”、“计算覆盖率”、“导出配置”、“导入配置”按钮
+- 面板最低宽度700px、最低高度200px（窗口最小高度300），滚动区域使用默认横向滚动条样式
+- 每个动作条目包含动作名称、起始帧、删除按钮；每个动作下有多个状态条目，
+  每个状态包含状态名称、持续帧、颜色选择、“有效”复选框、“等待帧”（若大于0自动追加延迟状态）、删除按钮
+- 面板底部除已有按钮外，在最下面右侧新增三个按钮（切换模式、问号、说明），与覆盖率标签同行，行高固定40px
 
 【计算覆盖率及优化】
-- “计算覆盖率”按钮根据当前设置计算各有效状态（原状态，不包含自动生成的延迟状态）的联合区间，
-  并在±50帧范围内对各动作起始帧进行简单优化（仅调整起始帧），给出建议调整量（同时以秒显示），并更新界面
+- “计算覆盖率”按钮遍历所有有效状态联合区间，并在±50帧范围内调整各动作起始帧，
+  给出建议调整量（以帧和秒显示），更新界面
 
 【配置导入/导出】
-- “导出配置”将当前参数保存为 JSON 文件（文件名形如“轴-YYYYMMDDhhmmss.json”）到程序目录
-- “导入配置”可从 JSON 文件中加载设置到参数面板
+- 导出配置为 JSON 文件（文件名形如“轴-YYYYMMDDhhmmss.json”）到程序目录；支持导入配置
 
-注意：update_timeline() 中清空场景后，将鼠标指示线置为 None，以避免后续访问已删除对象。
+-----------------------------------------------------------
+通用工具函数：
 """
 
-import sys, json, os, datetime
+
+def seconds_to_frames(seconds):
+    """将秒转换为帧（1秒 = 30帧）"""
+    return int(seconds * 30)
+
+
+def frames_to_seconds(frames):
+    """将帧数转换为秒（1秒 = 30帧）"""
+    return frames / 30.0
+
+
+def merge_intervals(intervals):
+    """
+    合并重叠的时间区间。
+
+    参数:
+      intervals: 列表 [(start, end), ...]
+    返回:
+      合并后的区间列表
+    """
+    if not intervals:
+        return []
+    intervals = sorted(intervals, key=lambda x: x[0])
+    merged = [intervals[0]]
+    for current in intervals[1:]:
+        prev = merged[-1]
+        if current[0] <= prev[1]:
+            merged[-1] = (prev[0], max(prev[1], current[1]))
+        else:
+            merged.append(current)
+    return merged
+
+
+# --------------------
+# 主题定义（Dracula风格暗色与自定义淡紫色浅色）
+# --------------------
+DARK_THEME = {
+    "background": "#1E1E2E",
+    "panel": "#2E2E3E",
+    "grid": "#3E3E4E",
+    "text": "#D8DEE9",
+    "highlight": "#BD93F9",
+    "button": "#44475A",
+    "button_hover": "#6272A4",
+    "timeline_grid": "#5E5E6E",
+}
+
+LIGHT_THEME = {
+    "background": "#DAD2FF",  # 最淡紫色背景
+    "panel": "#DAD2FF",
+    "grid": "#AAAAAA",
+    "text": "#000000",  # 较深紫色文字
+    "highlight": "#FFF2AF",  # 淡黄色高亮
+    "button": "#B2A5FF",  # 淡紫色按钮
+    "button_hover": "#493D9E",
+    "timeline_grid": "#AAAAAA",
+}
+
+# --------------------
+# 左侧时间轴显示区域
+# --------------------
+from PyQt5.QtWidgets import QGraphicsTextItem, QGraphicsItem
+from PyQt5.QtGui import QPen, QBrush, QColor, QTransform, QIcon, QPixmap
+from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -52,13 +112,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QSizePolicy,
 )
-from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QPen, QBrush, QColor, QTransform, QIcon
-from PyQt5.QtWidgets import QGraphicsTextItem, QGraphicsItem
-
-import timeline  # 导入通用函数
-
-# --- 左侧时间轴显示区域 ---
+import sys, json, os, datetime, random
 
 
 class TimelineView(QGraphicsView):
@@ -73,23 +127,23 @@ class TimelineView(QGraphicsView):
         x = pos.x()
         try:
             if self.mouse_line is None or self.mouse_line.scene() is None:
-                pen = QPen(Qt.red, 2, Qt.SolidLine)
+                pen = QPen(QColor("#FF5555"), 2, Qt.SolidLine)
                 self.mouse_line = self.scene.addLine(
                     x, 0, x, self.scene.sceneRect().height(), pen
                 )
             else:
                 self.mouse_line.setLine(x, 0, x, self.scene.sceneRect().height())
         except RuntimeError:
-            pen = QPen(Qt.red, 2, Qt.SolidLine)
+            pen = QPen(QColor("#FF5555"), 2, Qt.SolidLine)
             self.mouse_line = self.scene.addLine(
                 x, 0, x, self.scene.sceneRect().height(), pen
             )
         super(TimelineView, self).mouseMoveEvent(event)
 
 
-# --- 右侧“状态”条目控件 ---
-
-
+# --------------------
+# 右侧状态条目控件
+# --------------------
 class StateWidget(QWidget):
     def __init__(
         self,
@@ -148,11 +202,11 @@ class StateWidget(QWidget):
         self.parent_action.remove_state(self)
 
 
-# --- 右侧“动作”控件，每个动作包含若干状态 ---
-
-
+# --------------------
+# 右侧动作条目控件（每个动作包含多个状态）
+# --------------------
 class OperatorActionWidget(QWidget):
-    def __init__(self, parent_main, default_name="新动作", default_start=0):
+    def __init__(self, parent_main, default_name="动作", default_start=0):
         super().__init__()
         self.parent_main = parent_main
         self.state_widgets = []
@@ -248,19 +302,20 @@ class OperatorActionWidget(QWidget):
         return data
 
 
-# --- 主窗口 ---
-
-
+# --------------------
+# 主窗口
+# --------------------
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # 设置窗口图标（要求同目录下有 icon.svg）
+        self.dark_mode = True  # 默认暗色模式
+        self.set_theme()
         self.setWindowIcon(QIcon("icon.svg"))
-        # 设置标题：英文名 ActionTimeLine - 中文名及作者信息
         self.setWindowTitle(
             "ActionTimeLine - 明日方舟动作时间轴与覆盖率计算工具 --by Cyletix"
         )
-        self.resize(1200, 600)
+        self.resize(1200, 300)
+        self.setMinimumHeight(300)
         self.timeline_length = 1800  # 默认1800帧
         self.zoom_factor = 1.0
 
@@ -301,19 +356,17 @@ class MainWindow(QMainWindow):
 
         # 右侧：参数设置面板
         self.right_panel = QWidget()
-        # 设置右侧面板最低宽度与高度
         self.right_panel.setMinimumWidth(700)
-        self.right_panel.setMinimumHeight(300)
+        self.right_panel.setMinimumHeight(200)
         self.right_panel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         right_layout = QVBoxLayout()
         right_layout.setSpacing(5)
         self.right_panel.setLayout(right_layout)
         main_layout.addWidget(self.right_panel, stretch=0)
 
-        # 滚动区域（紧凑排列动作条目），禁用横向滚动条
+        # 滚动区域（紧凑排列动作条目），恢复默认滚动条样式（允许横向滚动）
         self.action_scroll = QScrollArea()
         self.action_scroll.setWidgetResizable(True)
-        self.action_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.action_container = QWidget()
         self.action_layout = QVBoxLayout()
         self.action_layout.setContentsMargins(5, 5, 5, 5)
@@ -322,7 +375,7 @@ class MainWindow(QMainWindow):
         self.action_scroll.setWidget(self.action_container)
         right_layout.addWidget(self.action_scroll)
 
-        # 底部控制按钮
+        # 底部控制按钮（上排：添加、更新、计算、导入、导出）
         btn_layout = QHBoxLayout()
         self.add_action_button = QPushButton("添加动作")
         self.add_action_button.clicked.connect(self.add_operator_action)
@@ -330,27 +383,182 @@ class MainWindow(QMainWindow):
         self.update_button.clicked.connect(self.update_timeline)
         self.calc_button = QPushButton("计算覆盖率")
         self.calc_button.clicked.connect(self.calculate_coverage)
-        btn_layout.addWidget(self.add_action_button)
-        btn_layout.addWidget(self.update_button)
-        btn_layout.addWidget(self.calc_button)
-        right_layout.addLayout(btn_layout)
-
-        # 导入/导出按钮
-        io_layout = QHBoxLayout()
         self.export_button = QPushButton("导出配置")
         self.export_button.clicked.connect(self.export_config)
         self.import_button = QPushButton("导入配置")
         self.import_button.clicked.connect(self.import_config)
-        io_layout.addWidget(self.export_button)
-        io_layout.addWidget(self.import_button)
-        right_layout.addLayout(io_layout)
+        btn_layout.addWidget(self.add_action_button)
+        btn_layout.addWidget(self.update_button)
+        btn_layout.addWidget(self.calc_button)
+        btn_layout.addWidget(self.export_button)
+        btn_layout.addWidget(self.import_button)
+        right_layout.addLayout(btn_layout)
 
+        # 最下面右侧一行：覆盖率标签与三个新按钮（右对齐），固定高度40
+        bottom_layout = QHBoxLayout()
         self.coverage_label = QLabel("覆盖率: N/A")
-        right_layout.addWidget(self.coverage_label)
+        bottom_layout.addWidget(self.coverage_label)
+        bottom_layout.addStretch()
+        # 在覆盖率标签右侧新增提示标签，用于显示“未抽到”
+        self.surprise_msg_label = QLabel("")
+        self.surprise_msg_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        bottom_layout.addWidget(self.surprise_msg_label)
+        # 切换模式按钮（使用 emoji 图标）
+        self.toggle_button = QPushButton("🌙")  # 暗色模式下显示月亮
+        self.toggle_button.clicked.connect(self.toggle_theme)
+        self.toggle_button.setFixedSize(40, 40)
+        self.toggle_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 20px;
+                font-size: 18px;
+            }
+        """
+        )
+        bottom_layout.addWidget(self.toggle_button)
+        # 问号按钮：点击后2%随机弹出图库中一张图片，并在弹窗中显示图片；否则更新提示标签
+        self.surprise_button = QPushButton("?")
+        self.surprise_button.setToolTip("点我抽卡")
+        self.surprise_button.setFixedSize(40, 40)
+        self.surprise_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 20px;
+                font-size: 18px;
+            }
+            QPushButton:hover {
+                background-color: #FFF2AF;
+            }
+        """
+        )
+        self.surprise_button.clicked.connect(self.handle_surprise)
+        bottom_layout.addWidget(self.surprise_button)
+        # 说明按钮
+        self.info_button = QPushButton("说明")
+        self.info_button.setFixedSize(60, 40)
+        self.info_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 8px;
+                font-size: 14px;
+            }
+        """
+        )
+        self.info_button.clicked.connect(self.show_info)
+        bottom_layout.addWidget(self.info_button)
+        right_layout.addLayout(bottom_layout)
 
-        self.operator_actions = []  # 存放所有动作条目
+        self.operator_actions = []
         self.add_operator_action()  # 默认添加一条动作
         self.update_timeline()
+
+    def set_theme(self):
+        """应用当前模式的主题"""
+        self.theme = DARK_THEME if self.dark_mode else LIGHT_THEME
+        self.setStyleSheet(
+            f"""
+            QMainWindow {{
+                background-color: {self.theme['background']};
+                color: {self.theme['text']};
+            }}
+            QWidget {{
+                background-color: {self.theme['panel']};
+                color: {self.theme['text']};
+            }}
+            QLabel {{
+                color: {self.theme['text']};
+                font-size: 14px;
+            }}
+            QPushButton {{
+                background-color: {self.theme['button']};
+                color: {self.theme['text']};
+                border-radius: 8px;
+                padding: 5px;
+            }}
+            QPushButton:hover {{
+                background-color: {self.theme['button_hover']};
+            }}
+            QSpinBox, QLineEdit, QComboBox, QCheckBox {{
+                background-color: {self.theme['background']};
+                color: {self.theme['text']};
+            }}
+        """
+        )
+
+    def toggle_theme(self):
+        """切换深/浅色模式"""
+        self.dark_mode = not self.dark_mode
+        self.toggle_button.setText("🌙" if self.dark_mode else "☀️")
+        self.set_theme()
+        self.update_timeline()
+
+    def show_info(self):
+        """显示说明弹窗"""
+        info_text = (
+            "这是明日方舟动作时间轴与覆盖率计算工具。\n\n"
+            "左侧查看状态循环时间轴覆盖情况；\n"
+            "右侧添加和设置动作及状态。\n"
+            "动作名:干员平a, 干员1技能, 快活/召唤物阻挡等等\n"
+            "状态:技能开启/持续/结束状态，也可以填写攻击间隔,等待状态, 快活死亡状态等\n"
+            "颜色支持色号, 格式: #123456\n"
+            '点击"计算覆盖率"，程序会自动优化各动作起始帧以提高整体覆盖率。\n\n'
+            "作者：Cyletix"
+        )
+        QMessageBox.information(self, "工具说明", info_text)
+
+    def handle_surprise(self):
+        """问号按钮：2%概率随机弹出图库中一张图片，并在弹窗中显示图片；否则在底部提示“未抽到惊喜”"""
+        import random
+
+        if random.random() < 0.05:
+            img_dir = os.path.join(os.getcwd(), "img")
+            if os.path.exists(img_dir):
+                imgs = [
+                    f
+                    for f in os.listdir(img_dir)
+                    if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif"))
+                ]
+                if imgs:
+                    img_file = random.choice(imgs)
+                    img_path = os.path.join(img_dir, img_file)
+                    pixmap = QPixmap(img_path)
+                    if not pixmap.isNull():
+                        # 解析文件名格式，例如 "4_豆苗.jpg"
+                        base = os.path.splitext(img_file)[0]
+                        parts = base.split("_")
+                        if len(parts) >= 2:
+                            star = parts[0]
+                            name = parts[1]
+                        else:
+                            star = ""
+                            name = base
+                        self.surprise_msg_label.setText(f"你抽到了{star}星干员{name}!")
+                        msg_box = QMessageBox(self)
+                        msg_box.setWindowTitle(f"你抽到了{star}星干员{name}!")
+                        msg_box.setIconPixmap(
+                            pixmap.scaled(
+                                400, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation
+                            )
+                        )
+                        msg_box.setStandardButtons(QMessageBox.Ok)
+                        msg_box.exec_()
+                        self.surprise_msg_label.setText("")
+                    else:
+                        self.surprise_msg_label.setText("图片加载失败")
+                        QTimer.singleShot(
+                            3000, lambda: self.surprise_msg_label.setText("")
+                        )
+                else:
+                    self.surprise_msg_label.setText("图库中无图片")
+                    QTimer.singleShot(3000, lambda: self.surprise_msg_label.setText(""))
+            else:
+                self.surprise_msg_label.setText("未找到图库文件夹")
+                QTimer.singleShot(3000, lambda: self.surprise_msg_label.setText(""))
+        else:
+            self.surprise_msg_label.setText("什么也没抽到, 请再试一次")
+            from PyQt5.QtCore import QTimer
+
+            QTimer.singleShot(3000, lambda: self.surprise_msg_label.setText(""))
 
     def on_zoom_change(self, value):
         self.zoom_factor = value / 100.0
@@ -379,7 +587,7 @@ class MainWindow(QMainWindow):
     def build_extended_states(self, data):
         """
         对于每个动作，构建扩展状态列表：
-        对每个状态，如果 delay > 0，则在后追加一个延迟状态（名称"延迟开启", 颜色transparent, 无效）
+        对每个状态，如果 delay > 0，则在后追加一个延迟状态（名称"延迟开启", 颜色 transparent, 无效）
         返回扩展列表及总周期
         """
         ext_states = []
@@ -406,36 +614,41 @@ class MainWindow(QMainWindow):
 
     def update_timeline(self):
         self.scene.clear()
-        # 清空后置鼠标指示线
         self.timeline_view.mouse_line = None
 
-        # 采用更紧凑的布局：上部覆盖区与各动作时间轴紧贴排列
+        # 布局参数（保持用户设定）
         row_height = 30
-        margin = 25
-        union_area_height = row_height  # 覆盖区与单行一致
+        margin = 20
+        top_margin = 25
+        union_area_height = row_height // 2
         num_actions = len(self.operator_actions)
-        scene_height = union_area_height + num_actions * (row_height + margin)
+        scene_height = (
+            top_margin + union_area_height + num_actions * (row_height + margin)
+        )
         self.scene.setSceneRect(0, 0, self.timeline_length, scene_height)
 
-        # 绘制背景网格（每100帧一条竖线及刻度），文本忽略缩放
-        pen = QPen(Qt.gray)
+        # 绘制背景网格和刻度：刻度文字放在总覆盖轴上方（y = top_margin - 20）
+        pen = QPen(QColor(self.theme["timeline_grid"]))
         for x in range(0, self.timeline_length + 1, 100):
-            self.scene.addLine(x, 0, x, scene_height, pen)
+            self.scene.addLine(x, top_margin + union_area_height, x, scene_height, pen)
             txt = QGraphicsTextItem(f"{x}帧")
-            txt.setDefaultTextColor(Qt.black)
-            txt.setPos(x, 0)
+            txt.setDefaultTextColor(QColor(self.theme["text"]))
+            txt.setPos(x, top_margin - 20)
             txt.setFlag(QGraphicsItem.ItemIgnoresTransformations, True)
+            txt.setZValue(10)
             self.scene.addItem(txt)
 
         union_intervals = []
-        # 绘制各动作时间轴（从覆盖区下方开始排列）
+        # 绘制各动作时间轴（从总覆盖轴下方开始）
         for idx, op_widget in enumerate(self.operator_actions):
             data = op_widget.get_data()
-            y = union_area_height + margin + idx * (row_height + margin)
+            y = top_margin + union_area_height + margin + idx * (row_height + margin)
+            # 将动作名称放置于时间轴内，紧贴顶部
             txt = QGraphicsTextItem(data["name"])
-            txt.setDefaultTextColor(Qt.black)
-            txt.setPos(0, y - row_height)
+            txt.setDefaultTextColor(QColor(self.theme["text"]))
+            txt.setPos(0, y)
             txt.setFlag(QGraphicsItem.ItemIgnoresTransformations, True)
+            txt.setZValue(10)
             self.scene.addItem(txt)
             start = data["start"]
             ext_states, cycle = self.build_extended_states(data)
@@ -462,24 +675,19 @@ class MainWindow(QMainWindow):
                     if not state["valid"]:
                         color.setAlpha(100)
                     brush = QBrush(color)
-                    pen_rect = QPen(Qt.black)
+                    pen_rect = QPen(QColor(self.theme["grid"]))
                     self.scene.addRect(rect, pen_rect, brush)
                     if state["valid"]:
                         union_intervals.append((s_start, s_end))
                     cum += state["duration"]
 
-        # 在最上方绘制覆盖区，使用与动作条目相同高度
-        margin_top = 5
-        merged = timeline.merge_intervals(union_intervals)
+        # 绘制总覆盖轴：放在 top_margin 处，高度为 union_area_height，
+        # 不绘制边框，只填充背景色：暗模式下用白色，亮模式下用黑色
+        cover_color = QColor(255, 255, 255) if self.dark_mode else QColor(0, 0, 0)
+        merged = merge_intervals(union_intervals)
         for u_start, u_end in merged:
-            rect = QRectF(u_start, margin_top, u_end - u_start, union_area_height)
-
-            # **黑底白框样式**
-            brush = QBrush(QColor(0, 0, 0))  # 黑色背景
-            pen_rect = QPen(QColor(255, 255, 255))  # 白色边框
-            pen_rect.setWidth(2)
-
-            self.scene.addRect(rect, pen_rect, brush)
+            rect = QRectF(u_start, top_margin, u_end - u_start, union_area_height)
+            self.scene.addRect(rect, QPen(Qt.NoPen), QBrush(cover_color))
 
     def compute_union_coverage(self):
         union_intervals = []
@@ -503,7 +711,7 @@ class MainWindow(QMainWindow):
                     if state["valid"]:
                         union_intervals.append((s_start, s_end))
                     cum += state["duration"]
-        merged = timeline.merge_intervals(union_intervals)
+        merged = merge_intervals(union_intervals)
         total = sum(e - s for s, e in merged)
         return total
 
