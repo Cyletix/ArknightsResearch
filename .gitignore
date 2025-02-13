@@ -4,6 +4,8 @@ arknights-hg-1540
 .gitignore
 .arkresearch
 
+img
+
 cache
 result
 非线性回归.ipynb
