@@ -167,6 +167,8 @@ class StateWidget(QWidget):
 
         self.color_combo = QComboBox()
         self.color_combo.setEditable(True)
+        self.color_combo.setFixedHeight(28)  # 统一输入控件高度
+
         self.color_combo.addItems(
             ["red", "transparent", "blue", "green", "yellow", "black"]
         )
@@ -805,6 +807,12 @@ class MainWindow(QMainWindow):
                     op_widget.state_widgets[-1].wait_spin.setValue(
                         state.get("delay", 0)
                     )
+                    # 设置状态名称和延迟参数
+                    new_state = op_widget.state_widgets[-1]
+                    new_state.name_edit.setText(
+                        state.get("name", "状态")
+                    )  # 新增名称设置
+                    new_state.wait_spin.setValue(state.get("delay", 0))
                 self.operator_actions.append(op_widget)
                 self.action_layout.addWidget(op_widget)
             self.update_timeline()

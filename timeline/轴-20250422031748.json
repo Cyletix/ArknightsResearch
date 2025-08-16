@@ -1,0 +1,229 @@
+{
+    "timeline_length": 1800,
+    "actions": [
+        {
+            "name": "死士1",
+            "start": 0,
+            "states": [
+                {
+                    "name": "首次攻击",
+                    "duration": 35,
+                    "color": "blue",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                }
+            ],
+            "cycle": 305
+        },
+        {
+            "name": "死士2",
+            "start": 41,
+            "states": [
+                {
+                    "name": "首次攻击",
+                    "duration": 35,
+                    "color": "blue",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                },
+                {
+                    "name": "普攻",
+                    "duration": 15,
+                    "color": "red",
+                    "valid": true,
+                    "delay": 0
+                },
+                {
+                    "name": "等待",
+                    "duration": 75,
+                    "color": "transparent",
+                    "valid": false,
+                    "delay": 0
+                }
+            ],
+            "cycle": 90
+        }
+    ]
+}
